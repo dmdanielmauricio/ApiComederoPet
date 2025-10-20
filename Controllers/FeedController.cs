@@ -17,7 +17,7 @@ namespace PetFeederAPI.Controllers
             _db = db;
         }
 
-        // Endpoint que se llama desde la web para alimentar manualmente
+        // Activar alimentación manual desde web o curl
         [HttpPost("manual")]
         public IActionResult FeedNow()
         {
@@ -25,29 +25,28 @@ namespace PetFeederAPI.Controllers
             _db.FeedLogs.Add(log);
             _db.SaveChanges();
 
-            // Marcar que hay comando pendiente para la ESP32
-            comandoManual = true;
             lastFeed = log.Timestamp;
+            comandoManual = true; // marca comando pendiente para ESP32
 
             return Ok(new { message = "Comida enviada al comedero", lastFeed });
         }
 
-        // Endpoint para que la ESP32 consulte si hay comando manual pendiente
+        // Consultar si hay comando pendiente (ESP32)
         [HttpGet("check")]
         public IActionResult CheckCommand()
         {
             return Ok(new { comandoManual });
         }
 
-        // Endpoint para que la ESP32 confirme que ejecutó el comando
+        // Resetear comando pendiente después de ejecutar
         [HttpPost("reset")]
         public IActionResult ResetCommand()
         {
             comandoManual = false;
-            return Ok(new { message = "Comando reseteado" });
+            return Ok(new { status = "ok" });
         }
 
-        // Endpoint de estado para mostrar última alimentación
+        // Estado general
         [HttpGet("status")]
         public IActionResult GetStatus()
         {
