@@ -8,8 +8,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Conectar DbContext a PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=petfeeder.db"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PetFeederDB")));
 
 var app = builder.Build();
 
