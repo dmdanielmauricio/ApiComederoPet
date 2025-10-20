@@ -1,10 +1,19 @@
 ﻿// Models/FeedState.cs
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace PetFeederAPI.Models
 {
     public class FeedState
     {
-        public int Id { get; set; } = 1; // siempre habrá solo un registro
-        public bool ComandoManual { get; set; } = false;
-        public DateTime? LastFeed { get; set; }
+        [Key]
+        [Column("Id")]
+        public int Id { get; set; }
+
+        [Column("ShouldFeed")]  // ← Cambiar de "ComandoManual" a "ShouldFeed"
+        public bool ShouldFeed { get; set; }
+
+        [Column("LastFed")]  // ← Cambiar de "ÚltimaFeed" a "LastFed"
+        public DateTime LastFed { get; set; }
     }
 }

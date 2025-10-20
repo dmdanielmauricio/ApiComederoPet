@@ -30,8 +30,8 @@ namespace PetFeederAPI.Controllers
             var log = new FeedLog { Source = "manual" };
             _db.FeedLogs.Add(log);
 
-            state.ComandoManual = true;
-            state.LastFeed = log.Timestamp;
+            state.ShouldFeed = true;
+            state.LastFed = log.Timestamp;
 
             _db.SaveChanges();
 
@@ -43,7 +43,7 @@ namespace PetFeederAPI.Controllers
         public IActionResult CheckCommand()
         {
             var state = _db.FeedStates.First();
-            return Ok(new { comandoManual = state.ComandoManual });
+            return Ok(new { comandoManual = state.ShouldFeed });
         }
 
         // Resetear comando pendiente después de ejecutar
@@ -51,7 +51,7 @@ namespace PetFeederAPI.Controllers
         public IActionResult ResetCommand()
         {
             var state = _db.FeedStates.First();
-            state.ComandoManual = false;
+            state.ShouldFeed = false;
             _db.SaveChanges();
 
             return Ok(new { status = "ok" });
@@ -65,7 +65,7 @@ namespace PetFeederAPI.Controllers
             return Ok(new
             {
                 status = "ok",
-                ultimaAlimentacion = state.LastFeed?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Nunca"
+                ultimaAlimentacion = state.LastFed.ToString("yyyy-MM-dd HH:mm:ss") ?? "Nunca"
             });
         }
     }
