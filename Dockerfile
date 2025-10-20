@@ -2,15 +2,15 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiamos todo el proyecto
+# Copiar archivo de proyecto y restaurar dependencias
+COPY ApiComederoPet/*.csproj ApiComederoPet/
+RUN dotnet restore ApiComederoPet/ApiComederoPet.csproj
+
+# Copiar todo el código
 COPY . .
 
-# Busca automáticamente un .sln o .csproj
-RUN dotnet restore **/*.sln || dotnet restore **/*.csproj
-
-# Si tu .csproj está en una subcarpeta, cámbiala aquí
+# Compilar y publicar
 WORKDIR /src/ApiComederoPet
-
 RUN dotnet publish -c Release -o /app
 
 # Etapa 2: runtime
