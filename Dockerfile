@@ -1,26 +1,22 @@
-# Etapa 1: Build
+# Etapa 1: build
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copiar solución y proyecto
-COPY ApiComederoPet.sln ./
+# Copiamos los archivos del proyecto
 COPY ApiComederoPet.csproj ./
+RUN dotnet restore ApiComederoPet.csproj
 
-# Restaurar dependencias
-RUN dotnet restore ApiComederoPet.sln
+# Copiamos todo el resto del código
+COPY . ./
+RUN dotnet publish ApiComederoPet.csproj -c Release -o /app/publish
 
-# Copiar carpeta con el código fuente
-COPY ApicomederoPet/ ./ApicomederoPet
-
-# Publicar la app
-RUN dotnet publish ApiComederoPet.sln -c Release -o /app
-
-# Etapa 2: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+# Etapa 2: runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
-COPY --from=build /app .
-EXPOSE 8080
+COPY --from=build /app/publish .
+
 ENTRYPOINT ["dotnet", "ApiComederoPet.dll"]
+
 
 
 
