@@ -10,5 +10,8 @@ namespace PetFeederAPI.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<FeedLog> FeedLogs { get; set; }
+
+        public DbSet<FeedState> FeedStates { get; set; }
+
     }
 }
