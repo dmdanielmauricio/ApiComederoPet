@@ -15,12 +15,14 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    // Habilitar Swagger siempre
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "PetFeeder API v1");
-        c.RoutePrefix = string.Empty; // 👈 Esto hace que Swagger se abra en la raíz "/"
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiComederoPet v1");
+        c.RoutePrefix = string.Empty; // Hace que Swagger se muestre en la raíz "/"
     });
+
 }
 
 //if (app.Environment.IsDevelopment())
