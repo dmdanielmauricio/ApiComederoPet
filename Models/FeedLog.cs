@@ -1,9 +1,19 @@
-﻿namespace PetFeederAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace PetFeederAPI.Models
 {
+    [Table("FeedLogs")]
     public class FeedLog
     {
+        [Key]
+        [Column("Id")]
         public int Id { get; set; }
-        public DateTime Timestamp { get; set; } = DateTime.Now;
-        public string Source { get; set; } = "manual"; // manual o automático
+
+        [Column("Source")]
+        public string Source { get; set; } = "";
+
+        [Column("Timestamp")]
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }
 }

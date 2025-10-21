@@ -16,12 +16,12 @@ namespace PetFeederAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll() => Ok(_db.Schedules.ToList());
+        public IActionResult GetAll() => Ok(_db.FeedSchedules.ToList());
 
         [HttpPost]
         public IActionResult Add(Schedule schedule)
         {
-            _db.Schedules.Add(schedule);
+            _db.FeedSchedules.Add(schedule);
             _db.SaveChanges();
             return Ok(schedule);
         }
@@ -29,9 +29,9 @@ namespace PetFeederAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var s = _db.Schedules.Find(id);
+            var s = _db.FeedSchedules.Find(id);
             if (s == null) return NotFound();
-            _db.Schedules.Remove(s);
+            _db.FeedSchedules.Remove(s);
             _db.SaveChanges();
             return Ok("Eliminado");
         }
