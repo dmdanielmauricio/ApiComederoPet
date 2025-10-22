@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PetFeederAPI.Data;
+using ApiComederoPet.Data;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);

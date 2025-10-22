@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PetFeederAPI.Models
+
+namespace ApiComederoPet.Models
 {
     [Table("FeedLogs")]
     public class FeedLog

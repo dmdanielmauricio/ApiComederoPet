@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PetFeederAPI.Data;
-using PetFeederAPI.Models;
+using ApiComederoPet.Data;
+using ApiComederoPet.Models;
 
-namespace PetFeederAPI.Controllers
+namespace ApiComederoPet.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

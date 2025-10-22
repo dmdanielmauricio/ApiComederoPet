@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PetFeederAPI.Data;
-using PetFeederAPI.Models;
+using ApiComederoPet.Data;
+using ApiComederoPet.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace PetFeederAPI.Controllers
+namespace ApiComederoPet.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -15,25 +16,40 @@ namespace PetFeederAPI.Controllers
             _db = db;
         }
 
+        // ✅ Registro de usuario
         [HttpPost("register")]
-        public IActionResult Register(User user)
+        public async Task<IActionResult> Register([FromBody] User user)
         {
-            if (_db.Users.Any(u => u.Username == user.Username))
-                return BadRequest("Usuario ya existe");
+            if (string.IsNullOrWhiteSpace(user.Username) || string.IsNullOrWhiteSpace(user.Password))
+                return BadRequest("Todos los campos son obligatorios.");
 
+            // Verificar si ya existe el usuario
+            var exists = await _db.Users.AnyAsync(u => u.Username == user.Username);
+            if (exists)
+                return BadRequest("El usuario ya existe.");
+
+            // Agregar nuevo usuario
             _db.Users.Add(user);
-            _db.SaveChanges();
-            return Ok("Usuario registrado");
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "✅ Usuario registrado correctamente." });
         }
 
+        // ✅ Inicio de sesión
         [HttpPost("login")]
-        public IActionResult Login(User user)
+        public async Task<IActionResult> Login([FromBody] User user)
         {
-            var dbUser = _db.Users.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
-            if (dbUser == null)
-                return Unauthorized("Credenciales inválidas");
+            if (string.IsNullOrWhiteSpace(user.Username) || string.IsNullOrWhiteSpace(user.Password))
+                return BadRequest("Todos los campos son obligatorios.");
 
-            return Ok("Login exitoso");
+            var dbUser = await _db.Users
+                .FirstOrDefaultAsync(u => u.Username == user.Username && u.Password == user.Password);
+
+            if (dbUser == null)
+                return Unauthorized("Credenciales inválidas.");
+
+            return Ok(new { message = "✅ Login exitoso." });
         }
     }
 }
+

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PetFeederAPI.Models;
+using ApiComederoPet.Models;
 
-namespace PetFeederAPI.Data
+namespace ApiComederoPet.Data
 {
     public class AppDbContext : DbContext
     {

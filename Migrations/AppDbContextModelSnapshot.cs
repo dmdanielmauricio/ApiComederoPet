@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using PetFeederAPI.Data;
+using ApiComederoPet.Data;
 
 #nullable disable
 
@@ -26,20 +26,45 @@ namespace ApiComederoPet.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("Id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Source")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("Source");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("Timestamp");
 
                     b.HasKey("Id");
 
-                    b.ToTable("FeedLogs");
+                    b.ToTable("FeedLogs", (string)null);
+                });
+
+            modelBuilder.Entity("PetFeederAPI.Models.FeedState", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("Id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("LastFed")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("LastFed");
+
+                    b.Property<bool>("ShouldFeed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("ShouldFeed");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FeedStates", (string)null);
                 });
 
             modelBuilder.Entity("PetFeederAPI.Models.Schedule", b =>
@@ -61,7 +86,7 @@ namespace ApiComederoPet.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Schedules");
+                    b.ToTable("FeedSchedules", (string)null);
                 });
 
             modelBuilder.Entity("PetFeederAPI.Models.User", b =>
@@ -72,17 +97,22 @@ namespace ApiComederoPet.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 #pragma warning restore 612, 618
         }

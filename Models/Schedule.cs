@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PetFeederAPI.Models
+namespace ApiComederoPet.Models
 {
     public class Schedule
     {
