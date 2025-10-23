@@ -16,14 +16,21 @@ namespace ApiComederoPet.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll() => Ok(_db.FeedSchedules.ToList());
+        public IActionResult GetAll()
+        {
+            var schedules = _db.FeedSchedules.ToList();
+            return Ok(schedules);
+        }
 
         [HttpPost]
-        public IActionResult Add(Schedule schedule)
+        public IActionResult Add([FromBody] Schedule schedule)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             _db.FeedSchedules.Add(schedule);
             _db.SaveChanges();
-            return Ok(schedule);
+            return CreatedAtAction(nameof(GetAll), new { id = schedule.Id }, schedule);
         }
 
         [HttpDelete("{id}")]
@@ -31,9 +38,10 @@ namespace ApiComederoPet.Controllers
         {
             var s = _db.FeedSchedules.Find(id);
             if (s == null) return NotFound();
+
             _db.FeedSchedules.Remove(s);
             _db.SaveChanges();
-            return Ok("Eliminado");
+            return NoContent();
         }
     }
 }
