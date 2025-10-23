@@ -122,7 +122,20 @@ namespace ApiComederoPet.Controllers
                     pendingCommand = false
                 });
             }
-
+            // Convertir hora UTC → hora Colombia
+            DateTime localTime;
+            try
+            {
+                localTime = TimeZoneInfo.ConvertTimeFromUtc(
+                    state.LastFed.ToUniversalTime(),
+                    TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time") // UTC-5 (Bogotá)
+                );
+            }
+            catch
+            {
+                // fallback si Render no reconoce el nombre del huso horario
+                localTime = state.LastFed.AddHours(-5);
+            }
             return Ok(new
             {
                 status = "ok",
