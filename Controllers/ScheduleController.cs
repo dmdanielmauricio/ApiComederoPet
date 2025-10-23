@@ -39,7 +39,7 @@ namespace ApiComederoPet.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error al guardar el horario: {ex.Message}");
+                return StatusCode(500, $"Error al guardar: {ex.Message} | INNER: {ex.InnerException?.Message}");
             }
         }
 
