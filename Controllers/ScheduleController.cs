@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ApiComederoPet.Data;
 using ApiComederoPet.Models;
 
@@ -15,62 +16,72 @@ namespace ApiComederoPet.Controllers
             _db = db;
         }
 
+        // ✅ Obtener todos los horarios
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var schedules = _db.FeedSchedules.OrderBy(s => s.Hour).ToList();
+            var schedules = await _db.FeedSchedules
+                .OrderBy(s => s.Hour)
+                .ThenBy(s => s.Minute)
+                .ToListAsync();
+
             return Ok(schedules);
         }
 
+        // ✅ Agregar nuevo horario
         [HttpPost]
-        public IActionResult Add(Schedule schedule)
+        public async Task<IActionResult> Add([FromBody] Schedule schedule)
         {
             try
             {
                 if (schedule == null)
                     return BadRequest("Datos inválidos");
 
-                schedule.CreatedAt = DateTime.Now;
+                // PostgreSQL exige UTC para timestamptz
+                schedule.CreatedAt = DateTime.UtcNow;
 
                 _db.FeedSchedules.Add(schedule);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
                 return Ok(schedule);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error al guardar: {ex.Message} | INNER: {ex.InnerException?.Message}");
+                return StatusCode(500,
+                    $"Error al guardar: {ex.Message} | INNER: {ex.InnerException?.Message}");
             }
         }
 
-
+        // ✅ Actualizar un horario existente
         [HttpPut("{id}")]
-        public IActionResult Update(int id, Schedule updated)
+        public async Task<IActionResult> Update(int id, [FromBody] Schedule updated)
         {
-            var schedule = _db.FeedSchedules.Find(id);
+            var schedule = await _db.FeedSchedules.FindAsync(id);
             if (schedule == null)
-                return NotFound();
+                return NotFound("Horario no encontrado");
 
             schedule.Hour = updated.Hour;
             schedule.Minute = updated.Minute;
             schedule.DaysOfWeek = updated.DaysOfWeek;
             schedule.IsActive = updated.IsActive;
-            _db.SaveChanges();
 
+            await _db.SaveChangesAsync();
             return Ok(schedule);
         }
 
+        // ✅ Eliminar horario
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var schedule = _db.FeedSchedules.Find(id);
+            var schedule = await _db.FeedSchedules.FindAsync(id);
             if (schedule == null)
-                return NotFound();
+                return NotFound("Horario no encontrado");
 
             _db.FeedSchedules.Remove(schedule);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             return Ok("Eliminado correctamente");
         }
     }
 }
+
