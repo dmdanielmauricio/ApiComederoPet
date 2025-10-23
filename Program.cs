@@ -13,13 +13,14 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "https://localhost:7157",      // Frontend local
-                "https://apicomederopet.onrender.com" // (opcional) permitir desde Render si hospedas el panel allí
+                "https://localhost:7157",             // Frontend local
+                "https://comederopetweb.onrender.com" // Frontend en Render
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
+
 
 // ----------------------------------------------
 // 🔹 Controladores y Swagger
