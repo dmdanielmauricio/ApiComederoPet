@@ -25,15 +25,24 @@ namespace ApiComederoPet.Controllers
         [HttpPost]
         public IActionResult Add(Schedule schedule)
         {
-            if (schedule == null)
-                return BadRequest("Datos inválidos");
+            try
+            {
+                if (schedule == null)
+                    return BadRequest("Datos inválidos");
 
-            schedule.CreatedAt = DateTime.Now;
-            _db.FeedSchedules.Add(schedule);
-            _db.SaveChanges();
+                schedule.CreatedAt = DateTime.Now;
 
-            return Ok(schedule);
+                _db.FeedSchedules.Add(schedule);
+                _db.SaveChanges();
+
+                return Ok(schedule);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al guardar el horario: {ex.Message}");
+            }
         }
+
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, Schedule updated)
