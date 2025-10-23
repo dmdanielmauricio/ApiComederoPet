@@ -7,15 +7,17 @@ namespace ApiComederoPet.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        public int UserId { get; set; }
+        [Range(0, 23)]
+        public int Hour { get; set; }  // 🕐 hora del día
+
+        [Range(0, 59)]
+        public int Minute { get; set; } // 🕐 minutos
 
         [Required]
-        [DataType(DataType.Time)]
-        public DateTime Time { get; set; }
+        public string DaysOfWeek { get; set; } = "Lunes,Martes,Miercoles"; // 📅 días activos
 
-        public string Days { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
 
-        public bool Active { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

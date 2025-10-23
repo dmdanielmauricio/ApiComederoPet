@@ -18,30 +18,50 @@ namespace ApiComederoPet.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var schedules = _db.FeedSchedules.ToList();
+            var schedules = _db.FeedSchedules.OrderBy(s => s.Hour).ToList();
             return Ok(schedules);
         }
 
         [HttpPost]
-        public IActionResult Add([FromBody] Schedule schedule)
+        public IActionResult Add(Schedule schedule)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (schedule == null)
+                return BadRequest("Datos inválidos");
 
+            schedule.CreatedAt = DateTime.Now;
             _db.FeedSchedules.Add(schedule);
             _db.SaveChanges();
-            return CreatedAtAction(nameof(GetAll), new { id = schedule.Id }, schedule);
+
+            return Ok(schedule);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, Schedule updated)
+        {
+            var schedule = _db.FeedSchedules.Find(id);
+            if (schedule == null)
+                return NotFound();
+
+            schedule.Hour = updated.Hour;
+            schedule.Minute = updated.Minute;
+            schedule.DaysOfWeek = updated.DaysOfWeek;
+            schedule.IsActive = updated.IsActive;
+            _db.SaveChanges();
+
+            return Ok(schedule);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var s = _db.FeedSchedules.Find(id);
-            if (s == null) return NotFound();
+            var schedule = _db.FeedSchedules.Find(id);
+            if (schedule == null)
+                return NotFound();
 
-            _db.FeedSchedules.Remove(s);
+            _db.FeedSchedules.Remove(schedule);
             _db.SaveChanges();
-            return NoContent();
+
+            return Ok("Eliminado correctamente");
         }
     }
 }
