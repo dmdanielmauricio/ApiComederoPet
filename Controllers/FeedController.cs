@@ -139,7 +139,7 @@ namespace ApiComederoPet.Controllers
             return Ok(new
             {
                 status = "ok",
-                ultimaAlimentacion = state.LastFed.ToString("yyyy-MM-dd HH:mm:ss"),
+                ultimaAlimentacion = localTime.ToString("yyyy-MM-dd HH:mm:ss"), // 👈 Aquí el cambio
                 pendingCommand = state.ShouldFeed
             });
         }
