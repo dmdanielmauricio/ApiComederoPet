@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ApiComederoPet.Data;
+﻿using ApiComederoPet.Data;
+using ApiComederoPet.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,11 +30,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
 // ----------------------------------------------
 // 🔹 Base de datos PostgreSQL
 // ----------------------------------------------
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PetFeederDB")));
+builder.Services.AddHostedService<SchedulerService>();
 
 var app = builder.Build();
 
