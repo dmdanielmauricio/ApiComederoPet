@@ -25,39 +25,59 @@ namespace ApiComederoPet.Services
                     using var scope = _services.CreateScope();
                     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                    // Obtener hora actual de Colombia
-                    var tz = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
-                    var horaColombia = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+                    // 🕒 Obtener hora actual de Colombia (UTC-5)
+                    DateTime horaColombia;
+                    try
+                    {
+                        var tz = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+                        horaColombia = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+                    }
+                    catch
+                    {
+                        // fallback (Render o Linux no siempre reconoce el nombre)
+                        horaColombia = DateTime.UtcNow.AddHours(-5);
+                    }
 
-                    var hora = horaColombia.Hour;
-                    var minuto = horaColombia.Minute;
+                    int hora = horaColombia.Hour;
+                    int minuto = horaColombia.Minute;
 
-                    // Buscar horarios que coincidan (±1 minuto)
+                    // 🔍 Buscar horarios activos
                     var horarios = await db.FeedSchedules
                         .Where(h => h.IsActive)
-                        .ToListAsync();
+                        .ToListAsync(stoppingToken);
 
                     foreach (var h in horarios)
                     {
-                        if (Math.Abs(h.Hour - hora) == 0 && Math.Abs(h.Minute - minuto) <= 1)
+                        // ✅ Coincidencia de hora exacta o dentro de ±1 minuto
+                        bool coincide = (h.Hour == hora && Math.Abs(h.Minute - minuto) <= 1);
+
+                        if (coincide)
                         {
-                            var state = await db.FeedStates.FirstOrDefaultAsync();
-                            if (state != null)
+                            var state = await db.FeedStates.FirstOrDefaultAsync(stoppingToken);
+                            if (state != null && !state.ShouldFeed)
                             {
                                 state.ShouldFeed = true;
                                 state.LastFed = horaColombia;
-                                await db.SaveChangesAsync();
 
-                                _logger.LogInformation($"🐾 Alimentación automática disparada a las {horaColombia}");
+                                // Registrar log automático
+                                db.FeedLogs.Add(new Models.FeedLog
+                                {
+                                    Source = "auto",
+                                    Timestamp = horaColombia
+                                });
+
+                                await db.SaveChangesAsync(stoppingToken);
+                                _logger.LogInformation($"🐾 Alimentación automática disparada a las {horaColombia:HH:mm:ss}");
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error en SchedulerService");
+                    _logger.LogError(ex, "❌ Error en SchedulerService");
                 }
 
+                // Espera 30 segundos antes de volver a revisar
                 await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
             }
         }
