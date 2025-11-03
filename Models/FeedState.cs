@@ -15,5 +15,8 @@ namespace ApiComederoPet.Models
 
         [Column("LastFed")]  // ← Cambiar de "ÚltimaFeed" a "LastFed"
         public DateTime LastFed { get; set; }
+
+        public DateTime? LastHeartbeatUtc { get; set; }
+
     }
 }
